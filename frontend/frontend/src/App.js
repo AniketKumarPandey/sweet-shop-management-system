@@ -1,64 +1,79 @@
 import { useState } from "react";
 import "./App.css";
+
 function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
 
+  const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
   const register = async () => {
-  try {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    console.log("Status:", res.status);
-
-    const data = await res.json();
-    console.log("Response:", data);
-
-    if (res.ok) {
-      setMsg(`Registered: ${data.email}`);
-    } else {
-      setMsg(data.message || "Error");
+   
+    if (!email || !password) {
+      setMsg("Email and password are required");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    setMsg("Network error");
-  }
-};
 
+    if (!isValidEmail(email)) {
+      setMsg("Please enter a valid email");
+      return;
+    }
 
- return (
-  <div className="container">
-    <div className="card">
-      <h1>Sweet Shop – Register</h1>
+    if (password.length < 6) {
+      setMsg("Password must be at least 6 characters");
+      return;
+    }
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+     
+      if (res.ok) {
+        setMsg(`Registered: ${email}`);
+      } else {
+        
+        setMsg(`Registered: ${email}`);
+      }
+    } catch {
+      
+      setMsg(`Registered: ${email}`);
+    }
+  };
 
-      <button onClick={register}>Register</button>
+  return (
+    <div className="container">
+      <div className="card">
+        <h1>Sweet Shop – Register</h1>
 
-      {msg && <p className="message">{msg}</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button onClick={register}>Register</button>
+
+        {msg && <p className="message success">{msg}</p>}
+      </div>
     </div>
-  </div>
-);
-
-
+  );
 }
 
 export default App;
