@@ -1,11 +1,5 @@
 import request from "supertest";
-import express from "express";
-
-const app = express();
-
-app.get("/", (_req, res) => {
-  res.send("Sweet Shop API is running");
-});
+import app from "../src/app";
 
 describe("GET /", () => {
   it("should return 200 and a status message", async () => {
